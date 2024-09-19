@@ -1,0 +1,113 @@
+1 - select exepre_codexemplar as exemplares, count(*) total
+from tb_exemplaremprestimo group by exepre_codexemplar
+
+2 - select autliv_codlivro,count(autliv_codautor)
+ from tb_autorlivro
+ where autliv_codlivro = 5
+ group by autliv_codlivro
+
+3 - select autliv_codautor,count(autliv_codlivro)
+from tb_autorlivro
+group by autliv_codautor
+
+4 - select avg(exepre_valormulta) from tb_exemplaremprestimo
+group by exepre_codemprestimo
+
+5 - select to_char(emp_data, 'month'), count (*)
+from tb_emprestimo
+group by
+to_char(emp_data, 'month');
+
+6 - 
+
+7 - select fun_codcargo as codigo_do_cargo,
+count(*) total
+from tb_funcionario group by fun_codcargo;
+
+8 - select avg(count(*)) as media_diaria
+from tb_emprestimo group by emp_data;
+
+9 - select count(*) from tb_reserva
+inner join tb_livro
+on res_codlivro = liv_codigo
+group by liv_titulo
+
+10 - select liv_codeditora,
+liv_ano,
+count(*) from tb_livro
+group by liv_codeditora, liv_ano
+order by liv_codeditora
+
+11 - select emp_codfuncionario,
+fun_nome,
+count(*)
+from
+tb_emprestimo inner join tb_funcionario
+on emp_codfuncionario = fun_codigo
+where
+to_char(emp_data, 'yyyy') = '2009'
+group by
+emp_codfuncionario,
+fun_nome
+
+12 - select res_codfunc,
+fun_nome,
+count(*)
+from
+tb_reserva inner join tb_funcionario
+on res_codfunc = fun_codigo
+group by
+res_codfunc,
+fun_nome
+
+13 - select res_codcliente,
+cli_nome,
+count(*)
+from
+tb_reserva inner join tb_cliente
+on res_codcliente = cli_codigo
+group by
+res_codcliente,
+cli_nome
+
+14 - select emp_codcliente,
+cli_nome,
+to_char(emp_data, 'month'),
+count(*)
+from
+tb_emprestimo inner join tb_cliente
+on emp_codcliente = cli_codigo
+group by
+emp_codcliente,
+cli_nome,
+to_char(emp_data, 'month')
+order by 
+to_char(emp_data, 'month')
+
+15 - select res_codfunc,
+fun_nome,
+to_char(res_data, 'yyyy'),
+count(*)
+from
+tb_reserva inner join tb_funcionario
+on res_codfunc = fun_codigo
+group by
+res_codfunc,
+fun_nome,
+to_char(res_data, 'yyyy')
+having count(*)>50
+
+16 -  select substr(liv_titulo,1,20),
+ exepre_codexemplar,
+ sum(exepre_valormulta)
+ from
+ tb_exemplaremprestimo,
+ tb_exemplar,
+ tb_livro
+ where exepre_codexemplar = exe_codigo
+ and exe_codlivro = liv_codigo
+ and to_char(exepre_dtdevmul, 'yyyy') = '2008'
+ group by
+ liv_titulo,
+ exepre_codexemplar
+ having sum(exepre_valormulta)>3

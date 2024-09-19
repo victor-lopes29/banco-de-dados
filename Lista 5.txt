@@ -1,0 +1,144 @@
+1 - select c.cli_nome, e.end_descricao
+from tb_cliente c
+join tb_endereco e
+on c.cli_codendereco = e.end_codigo
+join tb_cidade cd
+on c.cli_codcidade = cd.cid_codigo
+where cd.cid_descricao = 'Medianeira'
+
+2 - select exepre_codemprestimo, exepre_valormulta
+from tb_exemplaremprestimo
+where exepre_valormulta>0
+
+3 - select a.aut_nome
+from tb_autor a
+join tb_autorlivro al
+on a.aut_codigo = al.autliv_codautor
+join tb_livro l
+on al.autliv_codlivro = l.liv_codigo
+where l.liv_codigo = 5
+
+4 - select c.cli_nome,
+count(*) reservas
+from tb_cliente c
+join tb_reserva r
+on c.cli_codigo = r.res_codcliente
+group by c.cli_nome
+
+5 - select c.cli_nome,
+count(*) livros
+from tb_cliente c
+join tb_emprestimo e
+on c.cli_codigo = e.emp_codcliente
+join tb_exemplaremprestimo ee
+on e.emp_codigo = ee.exepre_codemprestimo
+group by c.cli_nome
+
+6 - select f.fun_nome,
+c.car_descricao,
+to_char(c.car_salariobase, 'L99,999.99')
+from tb_funcionario f
+join tb_cargo c
+on f.fun_codcargo = c.car_codigo
+
+7 - select substr(liv_titulo,1,20),
+cat_descricao,
+edi_nome
+from tb_livro
+join tb_categoria
+on liv_codcategoria = cat_codigo
+join tb_editora
+on liv_codeditora = edi_codigo
+where liv_codigo = &codigo
+
+8 - select emp_codigo
+from tb_emprestimo
+join tb_cliente
+on emp_codcliente = cli_codigo
+join tb_cidade
+on cli_codcidade = cid_codigo
+join tb_bairro
+on cli_codbairro = bai_codigo
+where cid_descricao = 'Medianeira'
+and
+bai_descricao = 'Centro'
+
+9 - select res_codigo
+from tb_reserva
+join tb_livro
+on res_codlivro = liv_codigo
+join tb_categoria
+on liv_codcategoria = cat_codigo
+where cat_descricao = 'Informatica'
+
+10 - select liv_titulo
+from tb_livro
+join tb_editora
+on liv_codeditora = edi_codigo
+where edi_nome = '&nome'
+
+11 - select cli_nome,
+emp_codigo
+from tb_cliente
+join tb_emprestimo
+on cli_codigo = emp_codcliente
+join tb_funcionario
+on emp_codfuncionario = fun_codigo
+where
+fun_nome = 'Carlos Pereira'
+and
+to_char(emp_data, 'mm/yy') between '09/09' and '10/09'
+
+12 - select exepre_codexemplar
+from tb_exemplaremprestimo
+join tb_emprestimo
+on exepre_codemprestimo = emp_codigo
+join tb_funcionario
+on emp_codfuncionario = fun_codigo
+where fun_nome = 'Carlos Pereira'
+
+13 - select to_char(res_data, 'month') as Mes,
+count(*) Quantidade
+from tb_reserva
+join tb_funcionario
+on res_codfunc = fun_codigo
+where fun_nome = 'Carlos Pereira'
+group by to_char(res_data, 'month')
+
+14 - select liv_titulo,
+count(aut_codigo) Autores
+from tb_livro
+join tb_autorlivro
+on liv_codigo = autliv_codlivro
+join tb_autor
+on autliv_codautor = aut_codigo
+group by liv_titulo
+having count(aut_codigo)>1
+
+15 - select liv_titulo,
+count(exe_codigo) Quantidade_de_exemplares
+from tb_livro
+join tb_exemplar
+on liv_codigo = exe_codlivro
+group by liv_titulo
+having count(exe_codigo)>5
+
+16 - select liv_codigo
+from tb_livro
+join tb_exemplar
+on liv_codigo = exe_codlivro
+join tb_exemplaremprestimo
+on exe_codigo = exepre_codexemplar
+join tb_emprestimo
+on exepre_codemprestimo = emp_codigo
+join tb_cliente
+on emp_codcliente = cli_codigo
+where cli_nome = 'Josimeire Calgaro Juvenal'
+
+17 - select liv_titulo
+from tb_livro
+join tb_autorlivro
+on liv_codigo = autliv_codlivro
+join tb_autor
+on autliv_codautor = aut_codigo
+where aut_nome = 'Rui José de Arruda Campos'

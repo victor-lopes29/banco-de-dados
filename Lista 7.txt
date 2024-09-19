@@ -1,0 +1,47 @@
+LISTA 7
+
+1 - select cli_codigo, cli_nome
+from tb_cliente
+join tb_emprestimo on
+emp_codcliente = cli_codigo
+where emp_codfuncionario = &codigo
+union
+select cli_codigo, cli_nome
+from tb_cliente
+join tb_reserva on
+res_codcliente = cli_codigo
+where res_codfunc = &codigo
+
+2 - select end_descricao from tb_endereco
+join tb_cliente on cli_codendereco = end_codigo
+where end_codigo = cli_codendereco
+union
+select end_descricao from tb_endereco
+join tb_funcionario on fun_codendereco = end_codigo
+where end_codigo = fun_codendereco
+
+4 - select fun_nome from tb_funcionario
+join tb_reserva on res_codfunc = fun_codigo
+minus
+select fun_nome from tb_funcionario
+join tb_emprestimo on emp_codfuncionario = fun_codigo
+
+5 - select fun_nome from tb_funcionario
+join tb_reserva on res_codfunc = fun_codigo
+intersect
+select fun_nome from tb_funcionario
+join tb_emprestimo on emp_codfuncionario = fun_codigo
+
+6 - select end_descricao from tb_endereco
+join tb_cliente on cli_codendereco = end_codigo
+where end_codigo = cli_codendereco
+minus
+select end_descricao from tb_endereco
+join tb_funcionario on fun_codendereco = end_codigo
+where end_codigo = fun_codendereco
+
+7 - select bai_descricao from tb_bairro
+join tb_editora on edi_codbairro = bai_codigo
+
+8 - select bai_descricao from tb_bairro
+join tb_cliente on cli_codbairro = bai_codigo

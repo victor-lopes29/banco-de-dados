@@ -1,0 +1,63 @@
+LISTA 6
+
+1 - select car_descricao from tb_cargo
+where car_salariobase > (select avg(car_salariobase)
+from tb_cargo)
+
+2 - select res_codfunc, count(res_codfunc) from tb_reserva
+group by res_codfunc
+having count(res_codfunc) > (select count(res_codigo)
+from tb_reserva)/3
+
+3 - select exepre_codexemplar, count(exepre_codexemplar)
+from tb_exemplaremprestimo
+group by exepre_codexemplar
+having count(exepre_codexemplar) >
+(select avg(count(exepre_codexemplar))
+from tb_exemplaremprestimo
+group by exepre_codexemplar)
+
+4 - select autliv_codautor, count(autliv_codautor)
+from tb_autorlivro
+group by autliv_codautor
+having count(autliv_codautor) >
+(select count(autliv_codlivro) from tb_autorlivro
+join tb_autor on aut_codigo = autliv_codautor
+where aut_nome = 'José Cordeiro')
+
+5 - select emp_data, count(emp_data) from tb_emprestimo
+having count(emp_data) > 
+(select count(res_data) from tb_reserva
+where emp_data = res_data)
+group by emp_data
+
+6 - select exe_codigo from tb_exemplar
+where exe_codigo not in (select distinct (exepre_codexemplar)
+from tb_exemplaremprestimo)
+
+7 - select
+  cli_codendereco,
+  end_descricao,
+  count(*)
+from
+  tb_cliente inner join tb_endereco
+    on cli_codendereco = end_codigo
+having count(*) > (select avg(count(*)) from tb_cliente
+                    group by cli_codendereco)
+group by
+  cli_codendereco,
+  end_descricao
+
+8 - select emp_codigo from tb_emprestimo
+where emp_codigo in (select exepre_codemprestimo
+from tb_exemplaremprestimo
+where exepre_valormulta > 0)
+
+9 - select emp_codigo from tb_emprestimo
+where emp_codfuncionario in (select fun_codigo
+from tb_funcionario
+where fun_nome = 'Carlos Pereira')
+
+10 - select bai_descricao from tb_bairro
+where bai_codigo in (select cli_codbairro
+from tb_cliente)

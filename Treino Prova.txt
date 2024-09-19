@@ -1,0 +1,149 @@
+a - select end_descricao,
+bai_descricao,
+cid_descricao, cid_estado
+from tb_endereco
+join tb_cliente
+on end_codigo = cli_codendereco
+join tb_bairro
+on cli_codbairro = bai_codigo
+join tb_cidade
+on cli_codcidade = cid_codigo
+join tb_venda
+on ven_codcliente = cli_codigo
+join tb_veiculo
+on ven_codveiculo = vei_codigo
+where vei_placa = 'APM-1112'
+
+b - select vei_modelo
+from tb_veiculo
+join tb_venda
+on vei_codigo = ven_codveiculo
+join tb_revendedora
+on ven_codrevenda = rev_codigo
+join tb_cidade
+on rev_codcidade = cid_codigo
+join tb_marca
+on vei_codmarca = mar_codigo
+join tb_categoria
+on vei_codcategoria = cat_codigo
+where cid_descricao = 'Campinas'
+and mar_descricao = 'Ford'
+and cat_descricao = 'Utilitario'
+
+c - select rev_nome,
+count(*)
+from tb_revendedora
+join tb_compra
+on rev_codigo = con_codrevenda
+join tb_veiculo
+on con_codveiculo = vei_codigo
+join tb_marca
+on vei_codmarca = mar_codigo
+join tb_categoria
+on vei_codcategoria = cat_codigo
+where
+upper(mar_descricao) = 'Volkswagem'
+and
+upper(cat_descricao) = 'Utilitario'
+having count(*) > 20
+group by
+rev_nome
+
+d - select vei_modelo, cid_descricao
+join tb_venda
+on vei_codigo = ven_codveiculo
+join tb_revendedora
+on ven_codrevenda = rev_codigo
+join tb_cidade
+on rev_codcidade = cid_codigo
+where ven_valor >30000
+and to_char(ven_data, 'yyyy') = 2007
+and vei_ano < 2002
+and vei_ano > 1998
+and cat_descricao != Caminhonete
+
+e - select mar_descricao,
+count(*) Quantidade
+from tb_marca
+join tb_veiculo
+on mar_codigo = vei_codmarca
+join tb_venda
+on vei_codigo = ven_codveiculo
+where to_char(ven_data, 'yyyy') = 2004
+group by mar_descricao
+having count(*) = (select max(count(ven_codveiculo))
+from tb_venda
+group by ven_codveiculo)
+
+f - 
+
+g - select avg(ven_valor) Media_Vendas
+from tb_venda
+join tb_revendedora
+on ven_codrevenda = rev_codigo
+join tb_veiculo
+on ven_codveiculo = vei_codigo
+where to_char(ven_data, 'mm/yy') = '11/04'
+and
+vei_ano = 2004
+
+h - select
+  tb_vendedor.ven_nome,
+  ven_salario_fixo as salario,
+  sum(ven_comissao) as comissao
+from
+  tb_venda inner join tb_vendedor
+    on ven_codvendedor = tb_vendedor.ven_codigo
+where
+  upper(ven_nome) = 'JOSE'
+  AND
+  extract(year from ven_data) = '2008'
+  and
+  extract(month from ven_data) between '01' and '06'
+group by
+  tb_vendedor.ven_nome,
+  ven_salario_fixo 
+
+i - select count(vei_modelo) Quantidade_Veiculos
+from tb_veiculo
+join tb_marca
+on vei_codmarca = mar_codigo
+join tb_categoria
+on vei_codcategoria = cat_codigo
+join tb_venda vd
+on vei_codigo = ven_codveiculo
+join tb_vendedor v
+on vd.ven_codvendedor = v.ven_codigo
+where v.ven_nome = 'Paulo'
+and mar_descricao = 'Ford'
+and vd.ven_valor > 25000
+and cat_descricao = 'Utilitario'
+and vei_ano between 2000 and 2006
+
+j - select rev_nome,
+count(ven_codigo) numero_de_vendas
+from tb_revendedora
+join tb_venda
+on rev_codigo = ven_codrevenda
+where to_char(ven_data, 'yyyy') = '2008'
+group by rev_nome
+having count(*) = (select max(count(ven_codrevenda))
+from tb_venda
+group by ven_codrevenda)
+
+k - select vei_modelo,
+max(ven_valor)
+from tb_veiculo
+join tb_venda
+on vei_codigo = ven_codveiculo
+group by vei_modelo
+having max(ven_valor) = (select max(ven_valor)
+from tb_venda)
+
+l - select rev_nome,
+to_char(sum(ven_valor),'L99,999.99') Lucro
+from tb_revendedora
+join tb_venda
+on rev_codigo = ven_codrevenda
+where to_char(ven_data, 'yyyy') = '2006'
+group by rev_nome

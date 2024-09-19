@@ -1,0 +1,104 @@
+﻿Victor Augustus Lopes Costa                2141981
+
+
+1 - 
+select nome, endereco, telefone,
+desc_cidade, desc_estado
+from tb_cadastro ca
+join tb_cidade ci
+on ca.cod_cidade = ci.cod_cidade
+join tb_estado es
+on ci.cod_estado = es.cod_estado
+join tb_tipo_cadastro tc
+on ca.cod_tipo_cadastro = tc.cod_tipo_cadastro
+where upper(tc.desc_tipo_cadastro) = 'CLIENTES'
+and upper(es.cod_estado) = 'PR'
+
+
+2 - 
+select ci.desc_cidade,
+count(*) Quantidade_Notas
+from tb_cidade ci
+join tb_cadastro ca
+on ci.cod_cidade = ca.cod_cidade
+join tb_nota_compra nc
+on ca.cod_cadastro = nc.cod_cadastro
+where to_char(nc.dt_emissao, 'yyyy') = '2021'
+group by ci.desc_cidade
+
+
+3 - 
+select ca.nome, avg(np.vl_unitario)
+from tb_cadastro ca
+join tb_nota_venda nv
+on ca.cod_cadastro = nv.cod_cadastro
+join tb_nota_produto np
+on nv.cod_nota = np.cod_nota
+where upper(nv.ind_situacao) = 'F'
+and to_char(nv.dt_emissao, 'mm/yy') = '01/21'
+group by ca.nome,
+np.vl_unitario
+
+
+4- 
+select  nc.num_nota, pd.desc_produto,
+ca.nome
+from tb_nota_compra nc
+join tb_cadastro ca
+on nc.cod_cadastro = ca.cod_cadastro
+join tb_nota_produto np
+on nc.cod_nota_compra = np.cod_nota
+join tb_produto pd
+on np.cod_produto = pd.cod_produto
+join tb_cidade ci
+on ca.cod_cidade = ci.cod_cidade
+where upper(nc.ind_situacao) = 'A'
+and upper(ci.desc_cidade) = 'MEDIANEIRA'
+and upper(ci.cod_estado) = 'PR'
+
+
+5 - 
+select ci.desc_cidade,
+count(*) Quantidade_Cliente
+from tb_cidade ci
+join tb_cadastro ca
+on ci.cod_cidade = ca.cod_cidade
+group by ci.desc_cidade
+having count(*) > 3
+
+
+6 - 
+select distinct nome
+from tb_cadastro
+where upper(nome) like '%SILVA%'
+
+
+7 - select cod_produto,
+desc_produto, vl_unitario
+from tb_produto
+where upper(substr(desc_produto, 3,1)) = 'A'
+and
+length(desc_produto)<15
+
+
+8 -
+select pd.desc_produto,
+nc.num_nota,
+case
+    when upper(nc.ind_forma_pagamento) = 'V'
+    then 'A Vista'
+    when upper(nc.ind_forma_pagamento) = 'P'
+    then 'A Prazo'
+    when upper(nc.ind_forma_pagamento) = 'C'
+    then 'Cartão de Credito'
+    when upper(nc.ind_forma_pagamento) = 'D'
+    then 'Cartão de debito'
+    when upper(nc.ind_forma_pagamento) = 'X'
+    then 'PIX'
+    else 'Forma de pagamento inválida'
+    end "Forma_de_pagamento"
+from tb_nota_compra nc
+join tb_nota_produto np
+on nc.cod_nota_compra = np.cod_nota
+join tb_produto pd
+on np.cod_nota_produto = pd.cod_produto

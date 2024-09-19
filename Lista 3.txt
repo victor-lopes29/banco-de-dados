@@ -1,0 +1,11 @@
+5 - select replace(end_descricao, 'Avenida', 'Rua') 
+from tb_endereco where end_descricao between 'C%' and 'H%'
+
+6 - select car_salariobase, car_salariobase+(mod(car_salariobase,300)) 
+from tb_cargo
+
+7 -  select emp_data,
+ emp_data + 13
+ from tb_emprestimo;
+
+8 - 

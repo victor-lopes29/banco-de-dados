@@ -1,0 +1,70 @@
+VICTOR AUGUSTUS LOPES COSTA
+RA: 2141981
+
+1 -
+create view vw_valor_total (CODIGO, NOME, VALOR_TOTAL)
+as
+select cod_cadastro, nome, sum((vl_unitario*qt_quantidade))
+as valor_total from tb_nota_produto np
+join tb_nota n
+on np.cod_nota = n.cod_nota
+join tb_cadastro c
+on n.cod_cadastro = c.cod_cadastro
+group by cod_cadastro, nome
+
+2 - 
+create or replace trigger trg_notas 
+after update or delete on tb_nota
+declare
+  tval_titulo tb_conta_receber.val_titulo%type;
+  tind_situacao tb_conta_receber.ind_situacao%type;
+begin
+ if updating then(
+  tind_situacao :='A';
+  tval_titulo := ( (select 
+            sum(:old.vl_unitario*:old.qt_quantidade)
+               from tb_nota_produto join tb_nota
+               on :old.tb_nota.cod_nota = :old.tb_nota_produto.cod_nota)/(:new.num_parcelas));
+)
+ end if;
+ if deleting then
+ end if;
+exception
+  when others then
+    raise;
+end;
+
+*NÃO TIVE TEMPO DE TERMINAR O EXERCÍCIO 2, MAS QUIS MANDAR ATÉ ONDE EU DESENVOLVI*
+
+3 -
+create or replace function fun_total_aberto(fcod_cliente tb_cadastro.cod_cadastro%type)
+return decimal
+is
+  ftitulo_aberto tb_conta_receber.ind_situacao%type;
+  fperc_juros tb_conta_receber.perc_juros%type;
+  fval_titulo tb_conta_receber.val_titulo%type;
+  fdt_vencimento tb_conta_receber.dt_vencimento%type;
+  fval_juros tb_conta_receber.val_titulo%type;
+  fval_total tb_conta_receber.val_titulo%type;
+begin
+   select distinct ind_situacao into ftitulo_aberto from tb_conta_receber cr
+   join tb_nota n on cr.cod_nota = n.cod_nota
+   where n.cod_cadastro = fcod_cliente and ind_situacao = 'A';
+   if ftitulo_aberto is not null then
+           select dt_vencimento into fdt_vencimento
+           from tb_conta_receber
+           where dt_vencimento < sysdate and ind_situacao = ftitulo_aberto;
+           if fdt_vencimento is not null then
+                   select perc_juros, val_titulo into fperc_juros, fval_titulo
+                   from tb_conta_receber cr
+                   join tb_nota n on cr.cod_nota = n.cod_nota
+                   where n.cod_cadastro = fcod_cliente and
+                   dt_vencimento = fdt_vencimento;
+                           fval_juros := (sysdate-fdt_vencimento)*fperc_juros*fval_titulo/100;
+                   fval_total := fval_titulo+fval_juros;
+           else
+                   fval_total := fval_titulo;
+           end if;
+   end if;
+return fval_total;
+end;

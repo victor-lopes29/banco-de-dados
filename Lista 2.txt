@@ -1,0 +1,21 @@
+Lista 2
+
+1 - select * from tb_cargo where car_salariobase 
+between 700 and 800 and car_descricao != 'Assistente Bibliotecario'
+
+2 - select * from tb_cargo where car_salariobase*1.2 > 900
+
+3 - select * from tb_exemplaremprestimo
+where exepre_dtprevdev between '02/03/10' and '05/03/10'
+
+4 - select * from tb_cliente where cli_cpf is not null 
+and cli_rg is not null and cli_fone is not null 
+and cli_prazodevol >= 5
+
+5 - select * from tb_livro where liv_ano = '2001'
+and liv_titulo like '%informáica'´
+
+6 - select * from tb_emprestimo where emp_codcliente = 10
+and emp_data between '01/01/08' and '31/12/08'
+
+7 - select * from tb_exemplar where exe_status = 'Locado'

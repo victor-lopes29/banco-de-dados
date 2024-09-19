@@ -1,0 +1,77 @@
+Para ativar o DBMS executar 'set serveroutput on'
+-----------------------------------------------------------------------------------
+
+trigger
+
+create or replace trigger trg_reserva
+after insert or update on tb_exemplaremprestimo
+for each row
+declare
+  wreserva tb_exemplaremprestimo.exepre_codreserva%type;
+  wsituacao tb_reserva.RES_SITUACAO%type;
+begin
+  select exepre_codreserva into wreserva from tb_exemplaremprestimo
+     where exepre_codemprestimo = :new.exepre_codemprestimo;
+  select RES_SITUACAO into wsituacao from tb_reserva
+     where res_codigo = wreserva;
+  if wsituacao = 'Ativa' then
+     update tb_reserva set
+         res_situacao = 'Concluida'
+         where res_codigo = wreserva;
+  end if;
+end;
+
+----------------------------------------------------------------------------------
+procedure
+
+create or replace procedure proc_atuliza_estoque(pres_codigo number)
+is
+  psituacao tb_reserva.res_situacao%type;
+begin
+  select res_situacao into psituacao from tb_reserva
+     where res_codigo = pres_codigo;
+  if psituacao = 'Ativa' then
+     update tb_reserva set
+         res_situacao = 'Concluida'
+         where res_codigo = pres_codigo;
+  else
+     dbms_output.put_line('Situacao cancelada ou ja concluida');
+  end if;
+end;
+
+para chamar
+
+begin
+proc_atuliza_estoque(1);
+end;
+
+-----------------------------------------------------------------------------------
+function
+
+create or replace function fun_reserva(freserva tb_reserva.res_codigo%type)
+return varchar
+is
+  fsituacao tb_reserva.res_situacao%type;
+begin
+  select res_situacao into fsituacao from tb_reserva
+     where res_codigo = freserva;
+  if fsituacao = 'Ativa' then
+     update tb_reserva set
+         res_situacao = 'Concluida'
+         where res_codigo = freserva;
+   fsituacao := 'Concluida';
+  else
+       fsituacao := 'Erro';
+  end if;
+return fsituacao;
+end;
+
+para  chamar
+
+ begin
+ if(fun_reserva(3) = 'Concluida') then
+ DBMS_OUTPUT.PUT_LINE('Concluido');
+ else
+ DBMS_OUTPUT.PUT_LINE('Falhou');
+ end if;
+ end;

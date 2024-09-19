@@ -1,0 +1,81 @@
+1 - select ca.nome, ca.endereco, ca.telefone, ci.desc_cidade,
+es.desc_estado from tb_cadastro ca
+join tb_cidade ci on ca.cod_cidade = ci.cod_cidade
+join tb_estado es on es.cod_estado = ci.cod_estado
+where ca.cod_cadastro not in (select cod_cadastro
+from tb_nota_venda)
+
+2 - select
+    ci.desc_cidade as cidade,
+    ci.cod_cidade,
+    count(*)
+from tb_cidade ci
+join tb_cadastro ca
+on ca.cod_cidade = ci.cod_cidade
+having count(*) in
+(select
+           count(*)
+  from
+           tb_cadastro ca
+   group by ca.cod_cidade
+having count(*) > 2
+)
+group by ci.desc_cidade, ci.cod_cidade
+
+3 - select ca.nome, sum(np.vl_unitario) valor_total_vendas
+from tb_cadastro ca
+join tb_nota_venda nv on nv.cod_cadastro = ca.cod_cadastro
+join tb_nota_produto np on np.cod_nota = nv.cod_nota
+group by ca.nome
+having sum(np.vl_unitario) > (select avg(np.vl_unitario)
+from tb_nota_produto np
+join tb_nota_venda nv on nv.cod_nota = np.cod_nota
+where to_char(dt_emissao, 'yyyy') = '2021')
+
+4 - select pr.cod_produto, pr.desc_produto
+from tb_produto pr
+join tb_nota_produto np on np.cod_produto = pr.cod_produto
+join tb_nota_venda nv on nv.cod_nota = np.cod_nota
+minus
+select pr.cod_produto, pr.desc_produto
+from tb_produto pr
+join tb_nota_produto np on np.cod_produto = pr.cod_produto
+join tb_nota_compra nc on nc.cod_nota_compra = np.cod_nota
+
+5 - select ca.nome,
+        ci.desc_cidade
+ from tb_cadastro ca
+ join tb_cidade ci on (ca.cod_cadastro = ci.cod_cidade)
+ join tb_nota_venda nv on (ca.cod_cadastro = nv.cod_cadastro)
+ where nv.cod_nota > 0
+ intersect
+ select ca.nome,
+        ci.desc_cidade
+ from tb_cadastro ca
+ join tb_cidade ci on (ca.cod_cadastro = ci.cod_cidade)
+ join tb_nota_compra nc on (ca.cod_cadastro = nc.cod_cadastro)
+ where nc.cod_nota_compra > 0
+
+6 - CREATE USER prova IDENTIFIED BY utfpr;
+
+CREATE ROLE reg_prova;
+
+GRANT create session
+     , create table
+     , create sequence
+TO reg_prova;
+
+GRANT reg_prova
+TO prova;
+
+7 - CREATE USER prova IDENTIFIED BY utfpr;
+
+CREATE ROLE reg_prova;
+
+GRANT create session
+     , create table
+     , create sequence
+TO reg_prova;
+
+GRANT reg_prova
+TO prova;

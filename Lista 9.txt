@@ -1,0 +1,73 @@
+1 - 
+create view v_livrosemprestados
+(Titulo, Codigo, Data_Emprestimo) as
+select substr(liv_titulo,1,10), liv_codigo, emp_data from
+tb_livro
+join tb_exemplar on
+liv_codigo = exe_codlivro
+join tb_exemplaremprestimo
+on exe_codigo = exepre_codexemplar
+join tb_emprestimo
+on exepre_codemprestimo = emp_codigo
+
+2 -
+create view v_empcod_empmulta
+(Codigo, Multa) as
+select emp_codigo, exepre_valormulta from
+tb_emprestimo
+join tb_exemplaremprestimo
+on emp_codigo = exepre_codemprestimo
+
+create view vi_multa (codigo, valor) as
+  select
+     exepre_codemprestimo, sum(exepre_valormulta)
+  from
+    tb_exemplaremprestimo
+  where 
+    exepre_valormulta > 0
+  group by
+    exepre_codemprestimo
+
+3 -
+create view v_reservafunc (Funcionario, Data, Quantidade 
+de Reservas)
+as
+select count(res_codigo), fun_codigo, res_data from
+tb_funcionario
+join tb_reserva
+on fun_codigo = res_codfunc
+group by res_codigo, fun_ codigo, res_data´
+
+4 -
+create view v_principal (Titulo, Editora, Autor, Categoria)
+as
+select substr(liv_titulo,1,15), edi_nome,
+substr(aut_nome,1,10), cat_descricao
+from tb_livro
+join tb_autorlivro
+on liv_codigo = autliv_codlivro
+join tb_autor
+on aut_codigo = autliv_codautor
+join tb_editora
+on liv_codeditora = edi_codigo
+join tb_categoria
+on liv_codcategoria = cat_codigo
+where upper (autliv_principal) = 'SIM'
+
+6 -
+create view v_funcionario (Nome, Cargo, Salario)
+as
+select fun_nome, car_descricao, car_salariobase
+from tb_funcionario
+join tb_cargo
+on fun_codcargo = car_codigo
+
+7 - 
+create view v_multaexemplar (Exemplar, Multa)
+as
+select exepre_codexemplar, sum(exepre_valormulta)
+from tb_exemplaremprestimo
+having sum(exepre_valormulta) > 0
+group by exepre_codexemplar;
+
+8 -
